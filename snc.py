@@ -15,8 +15,8 @@ argparser = argparse.ArgumentParser(usage=USAGE_MSG)
 # Refer https://docs.python.org/2/library/argparse.html#nargs for nargs argument
 argparser.add_argument("connection", nargs='*', help="Connection string in format [server] [port]")
 # other args
-argparser.add_argument("-l", help="Listen mode", action="store_true", default=False)
-argparser.add_argument("--key", help="Encryption key", required=True)
+argparser.add_argument("-l", help="listen mode / start as client", action="store_true", default=False)
+argparser.add_argument("--key", help="encryption key", required=True)
 
 args = argparser.parse_args()
 

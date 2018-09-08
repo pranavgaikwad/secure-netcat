@@ -35,7 +35,7 @@ positional arguments:
 
 optional arguments:
   -h, --help  show this help message and exit
-  -l          Listen mode
-  --key KEY   Encryption key
+  -l          listen mode / start as client
+  --key KEY   encryption key
 
 ```
