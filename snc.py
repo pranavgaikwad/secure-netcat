@@ -7,7 +7,7 @@ from sncclient import SncSocketClient
 from sncserver import SncSocketServer
 
 # custom usage message
-USAGE_MSG = 'usage: snc.py [-h] [-l] --key KEY server port'
+USAGE_MSG = 'snc.py [-h] [-l] --key KEY server port'
 
 # parses CLI arguments
 argparser = argparse.ArgumentParser(usage=USAGE_MSG)
