@@ -54,26 +54,28 @@ client = SncSocketClient()
 
 # server socket
 server = SncSocketServer()
-
+    
 # server routine
 if LISTEN:
-    try: 
-        # start the server
-        conn, addr = server.start(PORT)
-        while True:
+    # start the server
+    conn, addr = server.start(PORT)
+    while True:
+        try: 
             data = conn.recv(SncSocketServer.MAX_BUFFER_SIZE)
             if not data:
                 break
             print data
-    except KeyboardInterrupt:
-        conn.close()
-        server.close()
+        except (KeyboardInterrupt, EOFError):
+            conn.close()
+            server.close()
+            break
 # client routine
 else:
-    try:
-        client.connect(HOST, PORT)
-        while True:
+    client.connect(HOST, PORT)
+    while True:
+        try: 
             data = raw_input('')
             client.send(data)
-    except KeyboardInterrupt:
-        client.close()
+        except (KeyboardInterrupt, EOFError):
+            client.close()
+            break
