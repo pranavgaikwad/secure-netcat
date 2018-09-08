@@ -3,8 +3,8 @@
 import sys
 import argparse
 
-from sncclient import SocketClient
-from sncserver import SocketServer
+from sncclient import SncSocketClient
+from sncserver import SncSocketServer
 
 # custom usage message
 USAGE_MSG = 'usage: snc.py [-h] [-l] --key KEY server port'
