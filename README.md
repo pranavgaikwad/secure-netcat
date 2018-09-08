@@ -28,7 +28,7 @@ python snc.py --key <encryption_key> <server> <port>
 See following definitions for command line options available
 
 ```
-usage: usage: snc.py [-h] [-l] --key KEY server port
+usage: snc.py [-h] [-l] --key KEY server port
 
 positional arguments:
   connection  Connection string in format [server] [port]
