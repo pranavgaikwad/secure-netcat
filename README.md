@@ -38,7 +38,7 @@ python snc.py --key ENCRYPTION_KEY SERVER PORT < INPUT_FILE > OUTPUT_FILE
 
 ### Options
 
-See following definitions for command line options available
+Definitions for command line options available
 
 ```
 usage: snc.py [-h] [-l] --key KEY server port
