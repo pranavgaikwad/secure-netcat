@@ -15,25 +15,25 @@ Netcat application with AES & HMAC  <br/>
 Start **snc server** using following command
 
 ```sh
-python snc.py --key <encryption_key> -l <port>  
+python snc.py --key ENCRYPTION_KEY -l PORT  
 ```
 
 Start **snc client** using following command
 
 ```sh
-python snc.py --key <encryption_key> <server> <port>
+python snc.py --key ENCRYPTION_KEY SERVER PORT
 ```
 
 stdout / stdin can be redirected to file using 
 
 ```sh
-python snc.py --key <encryption_key> -l <port> < input_file > output_file
+python snc.py --key ENCRYPTION_KEY -l PORT < INPUT_FILE > OUTPUT_FILE
 ```
 
 similarly, for client, 
 
 ```sh
-python snc.py --key <encryption_key> <server> <port> < input_file > output_file
+python snc.py --key ENCRYPTION_KEY SERVER PORT < INPUT_FILE > OUTPUT_FILE
 ```
 
 ### Options
