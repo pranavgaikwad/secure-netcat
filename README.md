@@ -12,17 +12,30 @@ Netcat application with AES & HMAC  <br/>
 
 ### Usage
 
-Start snc server using following command
+Start *snc server* using following command
 
 ```
 python snc.py --key <encryption_key> -l <port>  
 ```
 
-Start snc client using following command
+Start *snc client* using following command
 
 ```
 python snc.py --key <encryption_key> <server> <port>
 ```
+
+stdout/stdin can be redirected to file using 
+
+```
+python snc.py --key <encryption_key> -l <port> < <input_file> > <output_file>
+```
+
+similarly, for client, 
+
+```
+python snc.py --key <encryption_key> <server> <port> < <input_file> > <output_file>
+```
+
 ### Options
 
 See following definitions for command line options available
