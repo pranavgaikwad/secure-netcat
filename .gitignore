@@ -1,3 +1,12 @@
 snc.sublime*
 socket
 *.pyc
+
+# test code
+snc1.py
+snc2.py
+snc11.py
+
+# temp output files
+sin_*
+sout_*
