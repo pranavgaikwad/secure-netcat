@@ -1,7 +1,5 @@
 # Author : Pranav Gaikwad
 
-import sys
-
 from sncclient import SncSocketClient
 from sncserver import SncSocketServer
 from sncargparser import parse_snc_args
@@ -14,10 +12,19 @@ client = SncSocketClient()
 
 # server socket
 server = SncSocketServer()
-    
+
 # server routine
 if LISTEN:
-    # start the server
+    server.start(PORT)
+# client routine
+else:
+    client.start(HOST, PORT)
+
+
+'''
+    # this is sample one way communication code
+    # ignore this code 
+
     conn, addr = server.start(PORT)
     while True:
         try: 
@@ -29,8 +36,7 @@ if LISTEN:
             conn.close()
             server.close()
             break
-# client routine
-else:
+
     client.connect(HOST, PORT)
     while True:
         try: 
@@ -39,3 +45,5 @@ else:
         except (KeyboardInterrupt, EOFError):
             client.close()
             break
+
+'''
