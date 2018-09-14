@@ -52,3 +52,7 @@ optional arguments:
   --key KEY   encryption key
 
 ```
+
+### Tests
+
+Tests use python-unittest and are under ***tests*** directory.
