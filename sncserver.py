@@ -2,16 +2,16 @@
 
 import sys
 import select
-import traceback
 
 from sncsocket import SncSocket
+from aeshelper import AesHelper, IntegrityError, InvalidMessageError
 
 class SncSocketServer(SncSocket):
     ''' socket server implementation '''
 
     MAX_CLIENTS = 5
 
-    def _start(self):
+    def _start(self, encryption_key):
         ''' main server loop with select() call '''
         std_input = sys.stdin
         # readable file descriptors
@@ -56,7 +56,9 @@ class SncSocketServer(SncSocket):
                     else:
                         recvd_data = descriptor.recv(SncSocket.MAX_BUFFER_SIZE)
                         if recvd_data:
-                            self._print(recvd_data)
+                            for recvd_data_chunk in self._split_json_string(recvd_data):
+                                decrypted_data = AesHelper.decrypt_and_verify(recvd_data_chunk, encryption_key)
+                                self._print(decrypted_data)
                             # make connection writeable
                             self._add_descriptor_to(writeable_fds, descriptor)
                             # make std_input readable
@@ -67,11 +69,13 @@ class SncSocketServer(SncSocket):
                             self._remove_descriptor_from(writeable_fds, descriptor)
 
                 for descriptor in ready_for_write:
-                    data_to_send = ''
+                    # data_to_send = ''
                     for data in buffer_data:
-                        data_to_send += data
-                    if data_to_send:
-                        descriptor.send(data_to_send)
+                        encrypted_data = AesHelper.encrypt(data, encryption_key)
+                        descriptor.send(encrypted_data)
+                        # data_to_send += data
+                    # if data_to_send:
+                        # descriptor.send(data_to_send)
                     self._add_descriptor_to(readable_fds, std_input)
                     self._add_descriptor_to(readable_fds, descriptor)
                     self._remove_descriptor_from(writeable_fds, descriptor)
@@ -87,7 +91,12 @@ class SncSocketServer(SncSocket):
                 self._close()
                 sys.exit(0)
 
-    def start(self, port):
+            except (IntegrityError, InvalidMessageError) as e:
+                self._close()
+                self._eprint('Message integrity compromised')
+                sys.exit(1)
+
+    def start(self, port, encryption_key):
         ''' connects the socket to given host, port '''
         ''' starts accepting connections and begins main loop '''
         try:
@@ -98,6 +107,6 @@ class SncSocketServer(SncSocket):
             # start listening
             self.s.listen(SncSocketServer.MAX_CLIENTS)
             # main loop
-            self._start()
+            self._start(encryption_key)
         except Exception as e:
-            raise Exception('Failed starting server : %s' % str(traceback.format_exc()))
+            raise Exception('Failed starting server')
