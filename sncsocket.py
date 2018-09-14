@@ -31,11 +31,11 @@ class SncSocket:
 
     def _print(self, msg):
         ''' prints to stdout '''
-        sys.stdout.write(msg)
+        sys.stdout.write('%s'%msg)
 
     def _eprint(self, msg):
         ''' prints to stderr '''
-        sys.stderr.write(msg)
+        sys.stderr.write('%s\n'%msg)
 
     def _split_json_string(self, msg):
         ''' splits a string containing multiple json '''
