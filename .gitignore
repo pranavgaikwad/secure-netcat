@@ -6,6 +6,7 @@ socket
 snc1.py
 snc2.py
 snc11.py
+crypt.py
 
 # temp output files
 sin_*
