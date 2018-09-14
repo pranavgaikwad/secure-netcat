@@ -5,7 +5,7 @@ from sncserver import SncSocketServer
 from sncargparser import parse_snc_args
 
 # parse arguments
-HOST, PORT, LISTEN = parse_snc_args()
+HOST, PORT, LISTEN, KEY = parse_snc_args()
 
 # client socket
 client = SncSocketClient()
@@ -15,10 +15,10 @@ server = SncSocketServer()
 
 # server routine
 if LISTEN:
-    server.start(PORT)
+    server.start(PORT, KEY)
 # client routine
 else:
-    client.start(HOST, PORT)
+    client.start(HOST, PORT, KEY)
 
 
 '''
