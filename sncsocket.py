@@ -1,5 +1,6 @@
 # Author : Pranav Gaikwad
 
+import re
 import sys
 import socket
 
@@ -13,6 +14,7 @@ class SncSocket:
     def _close(self):
         ''' closes server socket '''
         try:
+            # self.s.shutdown()
             self.s.close()
         except:
             raise Exception('Failed closing socket')
@@ -34,3 +36,11 @@ class SncSocket:
     def _eprint(self, msg):
         ''' prints to stderr '''
         sys.stderr.write(msg)
+
+    def _split_json_string(self, msg):
+        ''' splits a string containing multiple json '''
+        ''' objects into list of json objects '''
+        msg = msg.rstrip('\n')
+        pattern = re.compile(r"}(.*){")
+        msg = pattern.sub("}\n{", msg)
+        return msg.split('\n')
