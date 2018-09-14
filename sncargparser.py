@@ -30,7 +30,7 @@ def parse_snc_args():
     KEY = args.key
 
     if len(KEY) < 16:
-        print 'Key should be 16 characters long'
+        sys.stderr.write('Key should be 16 characters long\n')
         sys.exit(1)
     
     # if 'listen' mode is set, connection_string_list only has PORT
@@ -41,17 +41,17 @@ def parse_snc_args():
         try:
             PORT = int(connection_string_list[0])
         except IndexError:
-            print 'Please specify a port'
+            sys.stderr.write('Please specify a port\n')
             sys.exit(1)
     else:
         try:
             HOST = connection_string_list[0]
             PORT = int(connection_string_list[1])
         except IndexError:
-            print 'Please specify connection string in [server] [port] format'
+            sys.stderr.write('Please specify connection string in [server] [port] format\n')
             sys.exit(1)
         except ValueError:
-            print 'Incorrect host or port'
+            sys.stderr.write('Incorrect host or port\n')
             sys.exit(1)
 
     return HOST, PORT, LISTEN, KEY
