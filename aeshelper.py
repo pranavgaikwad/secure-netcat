@@ -1,8 +1,8 @@
 # Author : Pranav Gaikwad
 import json
 
-from base64 import b64encode, b64decode
 from Crypto.Cipher import AES
+from base64 import b64encode, b64decode
 
 class IntegrityError(Exception):
     pass
@@ -13,7 +13,7 @@ class InvalidMessageError(Exception):
 class AesHelper:
     ''' encryption / decryption helper '''
 
-    # these keys are expected in typical msg
+    # these keys are expected in a typical encrypted msg
     MSG_KEYS = [ 'nonce', 'ciphertext', 'tag' ]
 
     @staticmethod
