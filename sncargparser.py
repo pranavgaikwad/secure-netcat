@@ -1,5 +1,5 @@
 # Author : Pranav Gaikwad
-
+import sys
 import argparse
 
 def parse_snc_args():
@@ -27,6 +27,11 @@ def parse_snc_args():
     
     HOST = ''
     PORT = ''
+    KEY = args.key
+
+    if len(KEY) < 16:
+        print 'Key should be 16 characters long'
+        sys.exit(1)
     
     # if 'listen' mode is set, connection_string_list only has PORT
     # in it. If not, connection_string_list needs to be parsed
@@ -45,5 +50,8 @@ def parse_snc_args():
         except IndexError:
             print 'Please specify connection string in [server] [port] format'
             sys.exit(1)
+        except ValueError:
+            print 'Incorrect host or port'
+            sys.exit(1)
 
-    return HOST, PORT, LISTEN
+    return HOST, PORT, LISTEN, KEY
