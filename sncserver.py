@@ -34,7 +34,7 @@ class SncSocketServer(SncSocket):
                     if descriptor is self.s:
                         connection, client_addr = descriptor.accept()
                         connection.setblocking(0)
-                        self._eprint('Received connection from [%s:%s]\n'%(str(client_addr[0]),str(client_addr[1])))
+                        self._eprint('Received connection from [%s:%s]'%(str(client_addr[0]),str(client_addr[1])))
                         # add new connection to readable descriptors' list
                         self._add_descriptor_to(readable_fds, connection)
                         # make std_in readable
