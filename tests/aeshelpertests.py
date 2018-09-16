@@ -2,9 +2,9 @@ import sys
 import unittest
 
 sys.path.append('../')
-import aeshelper
+import sncaeshelper
 
-AesHelper = aeshelper.AesHelper
+AesHelper = sncaeshelper.AesHelper
 
 class AesHelperTests(unittest.TestCase):
     ''' Test cases for AES helper class '''
@@ -23,6 +23,10 @@ class AesHelperTests(unittest.TestCase):
         assert encrypted_msg1 != self.msg1
         assert encrypted_msg2 != self.msg2
 
+        very_long_msg = open('../sin_server', 'r').read()
+        assert AesHelper.encrypt(very_long_msg, self.key)
+
+
     def testDecrypt(self):
         encrypted_msg1 = AesHelper.encrypt(self.msg1, self.key)
         decrypted_msg1 = AesHelper.decrypt_and_verify(encrypted_msg1, self.key)
@@ -36,18 +40,18 @@ class AesHelperTests(unittest.TestCase):
         try:
             decrypted_msg1 = AesHelper.decrypt_and_verify(encrypted_msg1, self.fakeKey)
         except Exception as e:
-            assert type(e) == aeshelper.IntegrityError
+            assert type(e) == sncaeshelper.IntegrityError
 
     def testDeriveKey(self):
         salt1 = 'SOMESALT'
         salt2 = 'SOMEOTHERSALT'
 
-        key1 = AesHelper.derive_key(self.key, salt1)
-        key2 = AesHelper.derive_key(self.key, salt2)
+        key1 = AesHelper._derive_key(self.key, salt1)
+        key2 = AesHelper._derive_key(self.key, salt2)
         assert key1 != key2
 
-        key1 = AesHelper.derive_key(self.key, salt1)
-        key2 = AesHelper.derive_key(self.key, salt1)
+        key1 = AesHelper._derive_key(self.key, salt1)
+        key2 = AesHelper._derive_key(self.key, salt1)
         assert key1 == key2
 
         assert len(key1) == len(key2) == 32

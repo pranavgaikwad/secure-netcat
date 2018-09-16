@@ -11,16 +11,8 @@ class SnsSocketTests(unittest.TestCase):
         self.socket = sncsocket.SncSocket()
 
     def testSplitJsonString(self):
-        json_string = '''{"nonce": "ChmaWd0ohfejPgNn6gIlsA==", "ciphertext": "8A==", "tag": "gWJAAYi2n7TJP4Jh4olTfA=="}{"nonce": "eE9XSYMrcm8W04+z5fYWsw==", "ciphertext": "NeozHJus0YcM5l2Ewnzv6SoPK+6DhyRo2AzRG0r4Yg==", "tag": "DC0AmcObWnDkRwkg2BxrvA=="}'''
         expected = [
-            '{"nonce": "ChmaWd0ohfejPgNn6gIlsA==", "ciphertext": "8A==", "tag": "gWJAAYi2n7TJP4Jh4olTfA=="}', 
-            '{"nonce": "eE9XSYMrcm8W04+z5fYWsw==", "ciphertext": "NeozHJus0YcM5l2Ewnzv6SoPK+6DhyRo2AzRG0r4Yg==", "tag": "DC0AmcObWnDkRwkg2BxrvA=="}'
-        ]
-        assert expected == self.socket._split_json_string(json_string)
-
-        expected = [
-            '{"c": "NV+0LZB9dYVpepsGzZgeWPyrxQU56eCZ2VPBLK0QWg==", "t": "lk/rpN3XfVV5rz4wROdojA==", "n": "HbxJ6P7yEATZpZcy1gfsew=="}', 
-            '{"c": "WA==", "t": "spFNEd9zwAEVYL6zHIjCyw==", "n": "59YhJzo3DHDe0mHoKrbxuw=="}'
+            '{"s": "L0NnY1dh42lT2TVWZA2lQg==", "c": "JQ==", "t": "/1N5yuIKdF1LpAyAcS37rQ==", "n": "tVpnXLwmTPSrK1Vb1a5RJg=="}'
         ]
         json_string = open('testmessages', 'r').read()
         assert expected == self.socket._split_json(json_string)
@@ -43,6 +35,11 @@ class SnsSocketTests(unittest.TestCase):
         descriptors = [self.socket.s]
         self.socket._remove_descriptor_from(descriptors, None)
         assert descriptors == [self.socket.s]
+
+    def testReadLargeLines(self):
+        read_data = sys.stdin.readline()
+
+        assert read_data
 
 
 if __name__ == '__main__':
