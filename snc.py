@@ -1,4 +1,10 @@
-# Author : Pranav Gaikwad
+#!/usr/bin/env python
+
+'''
+Author   : Pranav Gaikwad
+Unity Id : 200203543
+'''
+
 
 from sncclient import SncSocketClient
 from sncserver import SncSocketServer
@@ -19,31 +25,3 @@ if LISTEN:
 # client routine
 else:
     client.start(HOST, PORT, KEY)
-
-
-'''
-    # this is sample one way communication code
-    # ignore this code 
-
-    conn, addr = server.start(PORT)
-    while True:
-        try: 
-            data = conn.recv(SncSocketServer.MAX_BUFFER_SIZE)
-            if not data:
-                break
-            print data
-        except (KeyboardInterrupt, EOFError):
-            conn.close()
-            server.close()
-            break
-
-    client.connect(HOST, PORT)
-    while True:
-        try: 
-            data = raw_input('')
-            client.send(data)
-        except (KeyboardInterrupt, EOFError):
-            client.close()
-            break
-
-'''
