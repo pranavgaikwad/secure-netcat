@@ -56,14 +56,6 @@ class SncSocket(object):
         sys.stderr.write('%s\n'%msg)
 
     @staticmethod
-    def _split_json(msg):
-        """
-        splits json according to string sequence
-        used to parse encrypted message
-        """
-        return re.findall(r'{"s": "[A-Za-z0-9/=\+]*", "c": "[A-Za-z0-9/=\+]*", "t": "[A-Za-z0-9/=\+]*", "n": "[A-Za-z0-9/=\+]*"}', msg)
-
-    @staticmethod
     def _get_recv_size(msg_length, buffer_length):
         """
         returns ideal message size to receive
@@ -104,9 +96,10 @@ class SncSocket(object):
             raise SncReceiveError('Error receiving data : %s'%str(error))
 
         try:
-            for recvd_data_chunk in self._split_json(recv_buffer):
-                decrypted_data = AesHelper.decrypt_and_verify(recvd_data_chunk, encryption_key)
-                self._print(decrypted_data)
+            for recvd_data_chunk in AesHelper.split_msgs(recv_buffer):
+                if recvd_data_chunk:
+                    decrypted_data = AesHelper.decrypt_and_verify(recvd_data_chunk, encryption_key)
+                    self._print(decrypted_data)
         except (IntegrityError, InvalidMessageError) as error:
             self._close()
             self._eprint('Message integrity compromised : %s'%str(error))
