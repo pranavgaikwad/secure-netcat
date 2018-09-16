@@ -16,13 +16,15 @@ class AesHelperTests(unittest.TestCase):
         self.fakeKey = '000FAKEKEYISFAKE'
 
     def testEncrypt(self):
-        
         encrypted_msg1 = AesHelper.encrypt(self.msg1, self.key)
         encrypted_msg2 = AesHelper.encrypt(self.msg2, self.key)
 
         assert encrypted_msg2 != encrypted_msg1
         assert encrypted_msg1 != self.msg1
         assert encrypted_msg2 != self.msg2
+
+
+        print encrypted_msg1
 
         # very_long_msg = open('../sin_server', 'r').read()
         # assert AesHelper.encrypt(very_long_msg, self.key)
