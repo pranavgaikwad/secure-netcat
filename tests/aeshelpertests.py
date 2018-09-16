@@ -38,5 +38,20 @@ class AesHelperTests(unittest.TestCase):
         except Exception as e:
             assert type(e) == aeshelper.IntegrityError
 
+    def testDeriveKey(self):
+        salt1 = 'SOMESALT'
+        salt2 = 'SOMEOTHERSALT'
+
+        key1 = AesHelper.derive_key(self.key, salt1)
+        key2 = AesHelper.derive_key(self.key, salt2)
+        assert key1 != key2
+
+        key1 = AesHelper.derive_key(self.key, salt1)
+        key2 = AesHelper.derive_key(self.key, salt1)
+        assert key1 == key2
+
+        assert len(key1) == len(key2) == 32
+
+
 if __name__ == '__main__':
     unittest.main()

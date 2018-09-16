@@ -1,4 +1,5 @@
 import sys
+import json
 import unittest
 
 sys.path.append('../')
@@ -17,6 +18,14 @@ class SnsSocketTests(unittest.TestCase):
         ]
         assert expected == self.socket._split_json_string(json_string)
 
+        expected = [
+            '{"c": "NV+0LZB9dYVpepsGzZgeWPyrxQU56eCZ2VPBLK0QWg==", "t": "lk/rpN3XfVV5rz4wROdojA==", "n": "HbxJ6P7yEATZpZcy1gfsew=="}', 
+            '{"c": "WA==", "t": "spFNEd9zwAEVYL6zHIjCyw==", "n": "59YhJzo3DHDe0mHoKrbxuw=="}'
+        ]
+        json_string = open('testmessages', 'r').read()
+        assert expected == self.socket._split_json(json_string)
+
+        
     def testAddDescriptorTo(self):
         descriptors = []
 
