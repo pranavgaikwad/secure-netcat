@@ -3,7 +3,6 @@ Author   : Pranav Gaikwad
 Unity Id : 200203543
 '''
 
-import json
 from base64 import b64encode, b64decode
 
 from Crypto.Cipher import AES
@@ -27,8 +26,20 @@ class AesHelper(object):
     # program does not allow keys less than 16 characters long
     LENGTH_IDEAL_KEY = 16
 
-    # these keys are expected in a typical encrypted msg
-    MSG_KEYS = ['n', 'c', 't', 's']
+    # two fields in a msg are separated using
+    SEPARATOR_FIELDS = '__||'
+    # two messages are separated using
+    SEPARATOR_MSGS = '||__'
+
+    @staticmethod
+    def split_msgs(msgs):
+        """ splits one single msg into different encrypted msgs using msg separator """
+        return msgs.split(b64encode(AesHelper.SEPARATOR_MSGS).decode('utf-8'))
+
+    @staticmethod
+    def _split_msg(msg):
+        """ splits a single message into different fields """
+        return msg.split(b64encode(AesHelper.SEPARATOR_FIELDS).decode('utf-8'))
 
     @staticmethod
     def encrypt(plaintext, key):
@@ -43,25 +54,28 @@ class AesHelper(object):
         # encrypt
         cipher = AES.new(key, AES.MODE_GCM)
         ciphertext, tag = cipher.encrypt_and_digest(plaintext)
-        values = [b64encode(value).decode('utf-8') for value in cipher.nonce, ciphertext, tag, salt]
-        return json.dumps(dict(zip(AesHelper.MSG_KEYS, values)))
+        values = [
+            b64encode(value).decode('utf-8')
+            for value in cipher.nonce, ciphertext, tag, salt, AesHelper.SEPARATOR_MSGS
+            ]
+
+        return str(b64encode(AesHelper.SEPARATOR_FIELDS).decode('utf-8').join(values))
 
     @staticmethod
     def decrypt_and_verify(ciphertext, key):
         """ decrypts data encoded using AES """
         try:
-            b64 = json.loads(ciphertext)
-            msg = {key: b64decode(b64[key]) for key in AesHelper.MSG_KEYS}
+            msg = AesHelper._split_msg(ciphertext)
         except Exception as error:
             raise InvalidMessageError('Invalid message : %s\n' % str(error))
 
-        key = AesHelper._derive_key(key, msg[AesHelper.MSG_KEYS[3]])
+        key = AesHelper._derive_key(key, b64decode(msg[3]))
 
-        cipher = AES.new(key, AES.MODE_GCM, nonce=msg[AesHelper.MSG_KEYS[0]])
+        cipher = AES.new(key, AES.MODE_GCM, nonce=b64decode(msg[0]))
 
         try:
             plaintext = cipher.decrypt_and_verify(
-                msg[AesHelper.MSG_KEYS[1]], msg[AesHelper.MSG_KEYS[2]])
+                b64decode(msg[1]), b64decode(msg[2]))
         except Exception as error:
             raise IntegrityError(
                 'Integrity of message is compromised : %s' % str(error))
