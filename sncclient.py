@@ -7,7 +7,6 @@ import sys
 import select
 
 from sncsocket import SncSocket
-from sncaeshelper import IntegrityError, InvalidMessageError
 
 class SncSocketClient(SncSocket):
     ''' socket client implementation '''
@@ -65,14 +64,9 @@ class SncSocketClient(SncSocket):
                     descriptor.close()
                     sys.exit(1)
 
-            except (EOFError, KeyboardInterrupt):
+            except (EOFError, KeyboardInterrupt, SncSendError, SncReceiveError):
                 self._close()
                 sys.exit(0)
-
-            except (IntegrityError, InvalidMessageError):
-                self._close()
-                self._eprint('Message integrity compromised')
-                sys.exit(1)
     
     def start(self, host, port, encryption_key):
         ''' starts the client '''
