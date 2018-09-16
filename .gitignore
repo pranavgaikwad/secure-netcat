@@ -1,6 +1,8 @@
 # ignore all files 
-* 
+/* 
 
 # except
 !tests/
 !snc*.py
+!.gitignore
+!README.md

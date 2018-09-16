@@ -4,7 +4,7 @@ import sys
 import select
 
 from sncsocket import SncSocket
-from aeshelper import IntegrityError, InvalidMessageError
+from sncaeshelper import IntegrityError, InvalidMessageError
 
 class SncSocketClient(SncSocket):
     ''' socket client implementation '''

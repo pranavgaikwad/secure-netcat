@@ -5,7 +5,7 @@ import sys
 import socket
 from struct import pack, unpack
 
-from aeshelper import AesHelper
+from sncaeshelper import AesHelper
 
 class SncSocket:
     ''' generic class to handle common functions '''
