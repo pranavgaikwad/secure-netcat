@@ -29,12 +29,16 @@ class AesHelper:
     @staticmethod
     def encrypt(plaintext, key):
         ''' encrypts data using AES in GCM mode '''
-        ''' and returns msg with tag, nonce, & ciphertext in it '''
+        ''' and returns msg with tag, nonce, ciphertext & salt in it '''
+        # generate a random salt or pepper or whatever
         salt = get_random_bytes(AesHelper.LENGTH_IDEAL_KEY)
+        # derive key 
         key = AesHelper._derive_key(key, salt)
+        # encrypt
         cipher = AES.new(key, AES.MODE_GCM)
         ciphertext, tag = cipher.encrypt_and_digest(plaintext)
         values = [ b64encode(value).decode('utf-8') for value in cipher.nonce, ciphertext, tag, salt ]
+        
         return json.dumps(dict(zip(AesHelper.MSG_KEYS, values)))
 
     @staticmethod
