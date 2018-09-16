@@ -6,6 +6,8 @@ Unity Id : 200203543
 import sys
 import argparse
 
+from sncaeshelper import AesHelper
+
 def parse_snc_args():
     # custom usage message
     USAGE_MSG = 'snc.py [-h] [-l] --key KEY server port'
@@ -33,8 +35,8 @@ def parse_snc_args():
     PORT = ''
     KEY = args.key
 
-    if len(KEY) < 16:
-        sys.stderr.write('Key should be 16 characters long\n')
+    if len(KEY) < AesHelper.LENGTH_IDEAL_KEY:
+        sys.stderr.write('Key should be at least %s characters long\n'%str(AesHelper.LENGTH_IDEAL_KEY))
         sys.exit(1)
     
     # if 'listen' mode is set, connection_string_list only has PORT
