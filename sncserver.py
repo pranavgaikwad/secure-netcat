@@ -4,7 +4,7 @@ import sys
 import select
 
 from sncsocket import SncSocket
-from aeshelper import AesHelper, IntegrityError, InvalidMessageError
+from aeshelper import IntegrityError, InvalidMessageError
 
 class SncSocketServer(SncSocket):
     ''' socket server implementation '''
@@ -54,11 +54,8 @@ class SncSocketServer(SncSocket):
                             self._remove_descriptor_from(readable_fds, descriptor)
 
                     else:
-                        recvd_data = descriptor.recv(SncSocket.MAX_BUFFER_SIZE)
-                        if recvd_data:
-                            for recvd_data_chunk in self._split_json_string(recvd_data):
-                                decrypted_data = AesHelper.decrypt_and_verify(recvd_data_chunk, encryption_key)
-                                self._print(decrypted_data)
+                        valid = self._recv(descriptor, encryption_key)
+                        if valid:
                             # make connection writeable
                             self._add_descriptor_to(writeable_fds, descriptor)
                             # make std_input readable
@@ -69,13 +66,8 @@ class SncSocketServer(SncSocket):
                             self._remove_descriptor_from(writeable_fds, descriptor)
 
                 for descriptor in ready_for_write:
-                    # data_to_send = ''
                     for data in buffer_data:
-                        encrypted_data = AesHelper.encrypt(data, encryption_key)
-                        descriptor.send(encrypted_data)
-                        # data_to_send += data
-                    # if data_to_send:
-                        # descriptor.send(data_to_send)
+                        self._send(descriptor, data, encryption_key)
                     self._add_descriptor_to(readable_fds, std_input)
                     self._add_descriptor_to(readable_fds, descriptor)
                     self._remove_descriptor_from(writeable_fds, descriptor)
@@ -93,7 +85,7 @@ class SncSocketServer(SncSocket):
 
             except (IntegrityError, InvalidMessageError) as e:
                 self._close()
-                self._eprint('Message integrity compromised')
+                self._eprint('Message integrity compromised : %s'%str(e))
                 sys.exit(1)
 
     def start(self, port, encryption_key):
@@ -109,4 +101,5 @@ class SncSocketServer(SncSocket):
             # main loop
             self._start(encryption_key)
         except Exception as e:
-            raise Exception('Failed starting server')
+            self._close()
+            raise Exception('Failed starting server : %s\n'%str(e))
