@@ -10,18 +10,13 @@ from sncclient import SncSocketClient
 from sncserver import SncSocketServer
 from sncargparser import parse_snc_args
 
-# parse arguments
-HOST, PORT, LISTEN, KEY = parse_snc_args()
+if __name__ == "__main__":
+    # parse arguments
+    HOST, PORT, LISTEN, KEY = parse_snc_args()
 
-# client socket
-client = SncSocketClient()
-
-# server socket
-server = SncSocketServer()
-
-# server routine
-if LISTEN:
-    server.start(PORT, KEY)
-# client routine
-else:
-    client.start(HOST, PORT, KEY)
+    # server routine
+    if LISTEN:
+        SncSocketServer().start(PORT, KEY)
+    # client routine
+    else:
+        SncSocketClient().start(HOST, PORT, KEY)
