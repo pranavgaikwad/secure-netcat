@@ -8,11 +8,17 @@ import sys
 import socket
 from struct import pack, unpack
 
-from sncaeshelper import AesHelper
+from sncaeshelper import AesHelper, IntegrityError, InvalidMessageError
+
+class SncSendError(Exception):
+    pass
+
+class SncReceiveError(Exception):
+    pass
 
 class SncSocket:
     ''' generic class to handle common functions '''
-    MAX_BUFFER_SIZE = 4096
+    MAX_BUFFER_SIZE = 2048
     
     def __init__(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -43,23 +49,28 @@ class SncSocket:
         ''' prints to stderr '''
         sys.stderr.write('%s\n'%msg)
 
-    def _split_json_string(self, msg):
-        ''' splits a string containing multiple json '''
-        ''' objects into list of json objects '''
-        msg = msg.rstrip('\n')
-        pattern = re.compile(r"}{")
-        msg = pattern.sub("}\n{", msg)
-        return msg.split('\n')
-
     def _split_json(self, msg):
         ''' splits json according to string sequence '''
-        return re.findall(r'{"c": "[A-Za-z0-9/=\+]*", "t": "[A-Za-z0-9/=\+]*", "n": "[A-Za-z0-9/=\+]*"}', msg)
+        ''' used to parse encrypted message '''
+        return re.findall(r'{"s": "[A-Za-z0-9/=\+]*", "c": "[A-Za-z0-9/=\+]*", "t": "[A-Za-z0-9/=\+]*", "n": "[A-Za-z0-9/=\+]*"}', msg)
+
+    def _get_recv_size(self, msg_length, buffer_length):
+        ''' returns ideal message size to receive '''
+        ''' based on msg_length, buffer_len & max_buffer_size '''
+        remaining_msg_size = msg_length - buffer_length
+        if remaining_msg_size > SncSocket.MAX_BUFFER_SIZE:
+            return SncSocket.MAX_BUFFER_SIZE
+        else:
+            return remaining_msg_size
 
     def _send(self, descriptor, data, encryption_key):
         ''' sends message, handles encryption before sending '''
         encrypted_data = AesHelper.encrypt(data, encryption_key)
         encrypted_data = pack('>I', len(encrypted_data)) + encrypted_data
-        descriptor.send(encrypted_data)
+        try:
+            descriptor.send(encrypted_data)
+        except Exception as e:
+            raise SncSendError('Error sending data : %s'%str(e))
 
     def _recv(self, descriptor, encryption_key):
         ''' receives message, handles decryption after receiving '''
@@ -71,15 +82,23 @@ class SncSocket:
         
         msg_length = unpack('>I', recv_msg)[0]
 
-        # use buffer to receive all data no matter what size 
-        recv_buffer = ''
-        while len(recv_buffer) < msg_length:
-            recvd_data = descriptor.recv(msg_length - len(recv_buffer))
-            if recvd_data:
-                recv_buffer += recvd_data
-        
-        for recvd_data_chunk in self._split_json(recv_buffer):
-            decrypted_data = AesHelper.decrypt_and_verify(recvd_data_chunk, encryption_key)
-            self._print(decrypted_data)
-        
+        try:
+            # use buffer to receive all data no matter what size 
+            recv_buffer = ''
+            while len(recv_buffer) < msg_length:
+                recvd_data = descriptor.recv(self._get_recv_size(msg_length, len(recv_buffer)))
+                if recvd_data:
+                    recv_buffer += recvd_data
+        except Exception as e:
+            raise SncReceiveError('Error receiving data : %s'%str(e))
+
+        try:
+            for recvd_data_chunk in self._split_json(recv_buffer):
+                decrypted_data = AesHelper.decrypt_and_verify(recvd_data_chunk, encryption_key)
+                self._print(decrypted_data)
+        except (IntegrityError, InvalidMessageError) as e:
+            self._close()
+            self._eprint('Message integrity compromised : %s'%str(e))
+            sys.exit(1)
+
         return True   
