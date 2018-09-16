@@ -1,7 +1,9 @@
 # Author : Pranav Gaikwad
+import sys
 import json
 
 from Crypto.Cipher import AES
+from Crypto.Protocol import KDF
 from base64 import b64encode, b64decode
 
 class IntegrityError(Exception):
@@ -14,7 +16,7 @@ class AesHelper:
     ''' encryption / decryption helper '''
 
     # these keys are expected in a typical encrypted msg
-    MSG_KEYS = [ 'nonce', 'ciphertext', 'tag' ]
+    MSG_KEYS = [ 'n', 'c', 't' ]
 
     @staticmethod
     def encrypt(plaintext, key):
@@ -28,12 +30,11 @@ class AesHelper:
     @staticmethod
     def decrypt_and_verify(ciphertext, key):
         ''' decrypts data encoded using AES '''
-        import sys
         try:
             b64 = json.loads(ciphertext)
             msg = { key: b64decode(b64[key]) for key in AesHelper.MSG_KEYS }
         except Exception as e:
-            raise InvalidMessageError('Invalid message')
+            raise InvalidMessageError('Invalid message : %s\n'%str(e))
 
         cipher = AES.new(key, AES.MODE_GCM, nonce=msg[AesHelper.MSG_KEYS[0]])
         
@@ -43,6 +44,11 @@ class AesHelper:
             raise IntegrityError('Integrity of message is compromised %s'%str(e))
 
         return plaintext
+
+    @staticmethod
+    def derive_key(password, salt):
+        ''' derives PBKDF2 key from given key & password '''
+        return KDF.PBKDF2(password, salt, dkLen=32)
 
 # tests. 
 # ignore this code. 
