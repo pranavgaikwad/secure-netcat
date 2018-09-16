@@ -61,15 +61,3 @@ class AesHelper:
     def _derive_key(password, salt):
         ''' derives PBKDF2 key from given key & password '''
         return KDF.PBKDF2(password, salt, dkLen=32)
-
-# tests. 
-# ignore this code. 
-if __name__ == '__main__':
-
-    key = 'RANDOMKEYSRANDOM'
-
-    msg = AesHelper.encrypt('this is secret message', key)
-
-    print msg
-
-    print AesHelper.decrypt_and_verify(msg, key)
