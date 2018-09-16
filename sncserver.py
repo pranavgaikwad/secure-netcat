@@ -6,8 +6,7 @@ Unity Id : 200203543
 import sys
 import select
 
-from sncsocket import SncSocket
-from sncaeshelper import IntegrityError, InvalidMessageError
+from sncsocket import SncSocket, SncSendError, SncReceiveError
 
 class SncSocketServer(SncSocket):
     ''' socket server implementation '''
@@ -82,14 +81,9 @@ class SncSocketServer(SncSocket):
                     descriptor.close()
                     sys.exit(1)
             
-            except (EOFError, KeyboardInterrupt):
+            except (EOFError, KeyboardInterrupt, SncSendError, SncReceiveError):
                 self._close()
                 sys.exit(0)
-
-            except (IntegrityError, InvalidMessageError) as e:
-                self._close()
-                self._eprint('Message integrity compromised : %s'%str(e))
-                sys.exit(1)
 
     def start(self, port, encryption_key):
         ''' connects the socket to given host, port '''
