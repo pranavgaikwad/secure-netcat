@@ -1,13 +1,6 @@
-snc.sublime*
-socket
-*.pyc
+# ignore all files 
+* 
 
-# test code
-snc1.py
-snc2.py
-snc11.py
-crypt.py
-
-# temp output files
-sin_*
-sout_*
+# except
+!tests/
+!snc*.py
