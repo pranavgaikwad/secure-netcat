@@ -53,6 +53,8 @@ optional arguments:
 
 ```
 
+#### Please note that the key should be at least 16 characters long
+
 ### Tests
 
 Tests use python-unittest and are under ***tests*** directory.
